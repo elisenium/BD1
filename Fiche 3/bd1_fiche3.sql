@@ -39,7 +39,8 @@ WHERE ed.id_editeur = alb.editeur
 SELECT ed.id_editeur, ed.nom
 FROM bd2.albums alb, bd2.editeurs ed
 WHERE ed.id_editeur = alb.editeur
-  AND (alb.date_edition > '1998-12-31' AND alb.date_edition < '1999-12-31')
+  AND (alb.date_edition > '1998-12-31'
+  AND alb.date_edition < '1999-12-31')
   AND alb.prix >= 10;
 
 --7
@@ -54,10 +55,10 @@ WHERE ed.id_editeur = alb.editeur
 
 --8
 --Quels sont les éditeurs (id et nom) localisés ailleurs qu'en Belgique ou pour lequel le pays n'est pas précisé ?
-SELECT id_editeur, nom
-FROM bd2.editeurs
-WHERE pays != 'be'
-   OR pays IS NULL;
+SELECT ed.id_editeur, ed.nom
+FROM bd2.editeurs ed
+WHERE (ed.pays <> 'be'
+  OR ed.pays IS NULL);
 
 --9
 --Quels sont les albums qui ont été édités en Belgique ou en France, et qui ne sont ni des albums de la série « Tintin »,
@@ -111,10 +112,10 @@ WHERE ed.id_editeur = alb.editeur
 --Donnez le nom des éditeurs qui portent le même nom qu’au moins un auteur.
 SELECT DISTINCT ed.nom
 FROM bd2.albums alb, bd2.editeurs ed
-WHERE ed.id_editeur = alb.editeur
-  AND ed.nom = alb.coloriste
+WHERE ed.nom = alb.coloriste
    OR ed.nom = alb.dessinateur
    OR ed.nom = alb.scenariste;
+--pas besoin de jointure ici!
 
 --15
 --Quelle est la date d’édition du dernier album édité en octobre 2013 ?
@@ -179,7 +180,8 @@ WHERE scenariste = 'Franquin';
 --Oscar a reçu pour son anniversaire l’album « Le mystère de la grande pyramide » dont l’isbn est 2-87097-008-0.
 -- Malheureusement, il l’a déjà. Heureusement il peut l’échanger contre n’importe quel autre album du même prix mais
 -- dont le titre est différent. Contre quels albums peut-il l’échanger ?
-SELECT *
-FROM bd2.albums
-WHERE titre <> 'Le mystère de la grande pyramide'
-  AND prix = 10;
+SELECT DISTINCT alb.*
+FROM bd2.albums alb, bd2.albums alb1
+WHERE alb.titre <> 'Le mystère de la grande pyramide'
+  AND alb1.titre = 'Le mystère de la grande pyramide'
+  AND alb.prix = alb1.prix;
